@@ -50,7 +50,7 @@
     box-shadow: var(--card-shadow); padding:24px;
   }
   .qr-box{
-    width:250px; height:250px; display:block;
+    width:250px; height:250px; display:flex; align-items:center; justify-content:center;
   }
   .qr-caption{ text-align:center; }
   .qr-caption p.title{ font-size:15px; font-weight:800; margin:0 0 4px; }
@@ -75,7 +75,7 @@
   <div class="qr-wrap">
     <a class="qr-link" href="menu-inicio.html">
       <div class="qr-card">
-        <svg class="qr-box" id="qr-box"></svg>
+        <div class="qr-box" id="qr-box"></div>
       </div>
     </a>
     <div class="qr-caption">
@@ -85,41 +85,16 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-/* genera un patrón tipo QR (visual, decorativo) a partir de un texto semilla */
-function generateFakeQR(seed){
-  let h = 0;
-  for(let i=0;i<seed.length;i++){ h = (h*31 + seed.charCodeAt(i)) >>> 0; }
-  function rand(){ h = (h*1103515245 + 12345) >>> 0; return (h >>> 8) % 100 / 100; }
-
-  const cells = 25, size = 250, cell = size/cells;
-  let rects = `<rect width="${size}" height="${size}" fill="#fff"/>`;
-  const isFinder = (r,c) => (r<7 && c<7) || (r<7 && c>=cells-7) || (r>=cells-7 && c<7);
-
-  for(let r=0;r<cells;r++){
-    for(let c=0;c<cells;c++){
-      if(isFinder(r,c)) continue;
-      if(rand() > 0.55){
-        rects += `<rect x="${c*cell}" y="${r*cell}" width="${cell}" height="${cell}" fill="#1a1a1a"/>`;
-      }
-    }
-  }
-  function finderSquare(x,y){
-    return `
-      <rect x="${x}" y="${y}" width="${cell*7}" height="${cell*7}" fill="#1a1a1a"/>
-      <rect x="${x+cell}" y="${y+cell}" width="${cell*5}" height="${cell*5}" fill="#fff"/>
-      <rect x="${x+cell*2}" y="${y+cell*2}" width="${cell*3}" height="${cell*3}" fill="#1a1a1a"/>
-    `;
-  }
-  rects += finderSquare(0,0);
-  rects += finderSquare((cells-7)*cell,0);
-  rects += finderSquare(0,(cells-7)*cell);
-
-  return rects;
-}
-
-document.getElementById('qr-box').setAttribute('viewBox','0 0 250 250');
-document.getElementById('qr-box').innerHTML = generateFakeQR('mcdonalds-pedido-digital');
+new QRCode(document.getElementById("qr-box"), {
+  text: "https://mcdonalds-postres-demo.onrender.com/menu-inicio.html",
+  width: 250,
+  height: 250,
+  colorDark: "#1a1a1a",
+  colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.M
+});
 </script>
 </body>
 </html>
