@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McDonald's - Pedí Digital</title>
+<style>
+  :root{
+    --yellow:#FFC72C;
+    --red:#DA291C;
+    --dark:#292929;
+    --gray-bg:#F7F7F7;
+    --gray-text:#6E6E6E;
+    --card-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--gray-bg);
+    color: var(--dark);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app{
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: #fff;
+    display:flex;
+    flex-direction:column;
+  }
+
+  header.topbar{
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding: 20px 20px 16px; background:#fff; border-bottom: 1px solid #eee;
+  }
+  header.topbar .logo{ width:34px; height:34px; }
+  header.topbar h1{ font-size:17px; margin:0; font-weight:800; }
+
+  .intro{ padding: 18px 20px 4px; text-align:center; }
+  .intro h2{ font-size:19px; font-weight:800; margin:0 0 4px; }
+  .intro p{ font-size:13.5px; color:var(--gray-text); margin:0; }
+
+  .qr-wrap{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; padding: 30px 30px 50px;
+  }
+  .qr-card{
+    background:#fff; border:1px solid #f0f0f0; border-radius:22px;
+    box-shadow: var(--card-shadow); padding:24px;
+  }
+  .qr-box{
+    width:250px; height:250px; display:block;
+  }
+  .qr-caption{ text-align:center; }
+  .qr-caption p.title{ font-size:15px; font-weight:800; margin:0 0 4px; }
+  .qr-caption p.sub{ font-size:12.5px; color:var(--gray-text); margin:0; max-width:260px; }
+
+  a.qr-link{ text-decoration:none; color:inherit; display:block; }
+  a.qr-link:active .qr-card{ transform: scale(0.98); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <svg class="logo" viewBox="0 0 100 100"><path d="M20 90 C20 55 28 15 35 15 C42 15 45 45 50 45 C55 45 58 15 65 15 C72 15 80 55 80 90 Z" fill="#FFC72C"/></svg>
+    <h1>McDonald's</h1>
+  </header>
+
+  <div class="intro">
+    <h2>Adelantá tu pedido Digital</h2>
+    <p>y ahorrate la fila</p>
+  </div>
+
+  <div class="qr-wrap">
+    <a class="qr-link" href="menu-inicio.html">
+      <div class="qr-card">
+        <svg class="qr-box" id="qr-box"></svg>
+      </div>
+    </a>
+    <div class="qr-caption">
+      <p class="title">Escaneá el código QR</p>
+      <p class="sub">Apuntá la cámara de tu celular para empezar tu pedido digital</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* genera un patrón tipo QR (visual, decorativo) a partir de un texto semilla */
+function generateFakeQR(seed){
+  let h = 0;
+  for(let i=0;i<seed.length;i++){ h = (h*31 + seed.charCodeAt(i)) >>> 0; }
+  function rand(){ h = (h*1103515245 + 12345) >>> 0; return (h >>> 8) % 100 / 100; }
+
+  const cells = 25, size = 250, cell = size/cells;
+  let rects = `<rect width="${size}" height="${size}" fill="#fff"/>`;
+  const isFinder = (r,c) => (r<7 && c<7) || (r<7 && c>=cells-7) || (r>=cells-7 && c<7);
+
+  for(let r=0;r<cells;r++){
+    for(let c=0;c<cells;c++){
+      if(isFinder(r,c)) continue;
+      if(rand() > 0.55){
+        rects += `<rect x="${c*cell}" y="${r*cell}" width="${cell}" height="${cell}" fill="#1a1a1a"/>`;
+      }
+    }
+  }
+  function finderSquare(x,y){
+    return `
+      <rect x="${x}" y="${y}" width="${cell*7}" height="${cell*7}" fill="#1a1a1a"/>
+      <rect x="${x+cell}" y="${y+cell}" width="${cell*5}" height="${cell*5}" fill="#fff"/>
+      <rect x="${x+cell*2}" y="${y+cell*2}" width="${cell*3}" height="${cell*3}" fill="#1a1a1a"/>
+    `;
+  }
+  rects += finderSquare(0,0);
+  rects += finderSquare((cells-7)*cell,0);
+  rects += finderSquare(0,(cells-7)*cell);
+
+  return rects;
+}
+
+document.getElementById('qr-box').setAttribute('viewBox','0 0 250 250');
+document.getElementById('qr-box').innerHTML = generateFakeQR('mcdonalds-pedido-digital');
+</script>
+</body>
+</html>
